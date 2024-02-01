@@ -31,8 +31,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-@Mod(modid = "eplus", name = "Enchanting Plus", version = "@VERSION@", dependencies = "required-after:bookshelf@[2.3.557,);", certificateFingerprint = "@FINGERPRINT@")
+
+@Mod(EnchantingPlus.ID)
 public final class EnchantingPlus {
+    public static final String ID = "eplus";
 
     public static final NetworkHandler NETWORK = new NetworkHandler("eplus");
     public static final LoggingHelper LOG = new LoggingHelper("Enchanting Plus");
@@ -85,7 +87,6 @@ public final class EnchantingPlus {
 
     @EventHandler
     public void onLoadComplete (FMLLoadCompleteEvent event) {
-
         ConfigurationHandler.buildBlacklist();
     }
 }

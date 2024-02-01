@@ -35,6 +35,7 @@ eplus.info.tip.storage=高级附魔台可以存储放置其中的物品，就像
 eplus.info.tip.inventory=每一个人在附魔台中的空间都是独立的。破坏附魔台时，里面存储的所有物品都会掉落出来。
 eplus.info.tip.armor=附魔台左侧的装备栏与你的装备栏是相同的。
 eplus.info.tip.birthday=今天可能是你的生日。
+eplus.info.tip.delight=这个模组从农夫乐事借鉴太多代码结构了，要不改名叫附魔乐事吧。
 
 #工具提示
 gui.eplus.tooltip.tooexpensive=附魔过于昂贵！

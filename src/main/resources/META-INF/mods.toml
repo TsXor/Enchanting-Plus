@@ -1,0 +1,21 @@
+modLoader = "javafml"
+loaderVersion = "[36,)"
+license = "Not Specified"
+issueTrackerURL = "https://github.com/Epoxide-Software/Enchanting-Plus/issues"
+
+[[mods]]
+modId = "eplus"
+version = "@eplus_version@"
+displayName = "Enchanting Plus"
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/enchanting-plus"
+logoFile = ""
+credits = "Maintained by Darkhax"
+authors = [ "Darkhax", "lclc98", "xkyouchoux", "odininon", "GnR Slash" ]
+description = '''Provides a less random enchanting system.'''
+
+[[dependencies.eplus]]
+modId="bookshelf"
+mandatory=true
+versionRange="[10.2.15,)"
+ordering="NONE"
+side="BOTH"
