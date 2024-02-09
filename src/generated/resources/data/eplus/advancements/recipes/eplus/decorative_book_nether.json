@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "eplus:decorative_book_nether"
+    ]
+  },
+  "criteria": {
+    "have_aet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "eplus:advanced_table"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "eplus:decorative_book_nether"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have_aet",
+      "has_the_recipe"
+    ]
+  ]
+}

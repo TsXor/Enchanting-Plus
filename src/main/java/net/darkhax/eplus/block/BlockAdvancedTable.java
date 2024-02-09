@@ -1,117 +1,99 @@
 package net.darkhax.eplus.block;
 
+import net.darkhax.eplus.api.BookTexture;
+import net.darkhax.eplus.block.tileentity.TileEntityAdvancedTable;
+import net.darkhax.eplus.inventory.ItemStackHandlerEnchant;
+import net.darkhax.eplus.registry.ModBookTextures;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.HorizontalBlock;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Map;
 import java.util.UUID;
 
-import net.darkhax.bookshelf.block.BlockTileEntity;
-import net.darkhax.bookshelf.block.ITileEntityBlock;
-import net.darkhax.bookshelf.util.StackUtils;
-import net.darkhax.eplus.EnchantingPlus;
-import net.darkhax.eplus.block.tileentity.TileEntityAdvancedTable;
-import net.darkhax.eplus.block.tileentity.renderer.TileEntityAdvancedTableRenderer;
-import net.darkhax.eplus.inventory.ItemStackHandlerEnchant;
-import net.darkhax.eplus.network.GuiHandler;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockAdvancedTable extends BlockTileEntity implements ITileEntityBlock {
+@SuppressWarnings("deprecation")
+@ParametersAreNonnullByDefault
+public class BlockAdvancedTable extends HorizontalBlock implements IBookTexture {
+    private static final VoxelShape BOUNDS = box(0.0D, 0.0D, 0.0D, 16.0D, 12.0D, 16.0D);
 
-    private static final AxisAlignedBB BOUNDS = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.75D, 1.0D);
-
-    public BlockAdvancedTable () {
-
-        super(Material.ROCK, MapColor.PURPLE);
-        this.setLightOpacity(0);
-        this.setHardness(5.0F);
-        this.setResistance(2000.0F);
+    public BlockAdvancedTable() {
+        super(
+            Properties.of(Material.STONE, MaterialColor.COLOR_PURPLE)
+                .isViewBlocking((state, world, pos) -> true)
+                .strength(5.0F, 2000.0F)
+                .lightLevel(state -> 15) // as bright as lava
+        );
     }
 
     @Override
-    public void breakBlock (World worldIn, BlockPos pos, IBlockState state) {
-
-        final TileEntity tileentity = worldIn.getTileEntity(pos);
-
-        if (tileentity instanceof TileEntityAdvancedTable) {
-
-            final Map<UUID, ItemStackHandlerEnchant> inventories = ((TileEntityAdvancedTable) tileentity).getInveotries();
-
-            for (final ItemStackHandlerEnchant inventory : inventories.values()) {
-
-                StackUtils.dropStackInWorld(worldIn, pos, inventory.getEnchantingStack());
-                inventory.setStackInSlot(0, ItemStack.EMPTY);
+    public void onRemove(BlockState state, World level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            final TileEntity tileentity = level.getBlockEntity(pos);
+            if (tileentity instanceof TileEntityAdvancedTable advancedTableEntity) {
+                final Map<UUID, ItemStackHandlerEnchant> inventories = advancedTableEntity.getInventories();
+                for (final ItemStackHandlerEnchant inventory : inventories.values()) {
+                    InventoryHelper.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), inventory.getEnchantingStack());
+                    inventory.setStackInSlot(ItemStackHandlerEnchant.ENCHANT_SLOT_IDX, ItemStack.EMPTY);
+                }
+                inventories.clear();
             }
-
-            inventories.clear();
+            super.onRemove(state, level, pos, newState, isMoving);
         }
-
-        super.breakBlock(worldIn, pos, state);
     }
 
     @Override
-    public TileEntity createNewTileEntity (World worldIn, int meta) {
-
-        return new TileEntityAdvancedTable();
-    }
-
-    @Override
-    public AxisAlignedBB getBoundingBox (IBlockState state, IBlockAccess source, BlockPos pos) {
-
-        return BOUNDS;
-    }
-
-    @Override
-    public boolean isFullCube (IBlockState state) {
-
-        return false;
-    }
-
-    @Override
-    public boolean isOpaqueCube (IBlockState state) {
-
-        return false;
-    }
-
-    @Override
-    public boolean onBlockActivated (World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-
-        if (!worldIn.isRemote) {
-
-            final TileEntity tileentity = worldIn.getTileEntity(pos);
-
-            if (tileentity instanceof TileEntityAdvancedTable) {
-
-                playerIn.openGui(EnchantingPlus.instance, GuiHandler.ADVANCED_TABLE, worldIn, pos.getX(), pos.getY(), pos.getZ());
-            }
-
-            return true;
-        }
-
+    public boolean hasTileEntity(BlockState state) {
         return true;
     }
 
-    @Override
-    public Class<? extends TileEntity> getTileEntityClass () {
+    @Override @Nullable
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+        return new TileEntityAdvancedTable();
+    }
 
-        return TileEntityAdvancedTable.class;
+    @Override @Nonnull
+    public BlockRenderType getRenderShape(BlockState pState) {
+        return BlockRenderType.MODEL;
+    }
+
+    @Override @Nonnull
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        return BOUNDS;
+    }
+
+    @Override @Nonnull
+    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        if (!world.isClientSide) {
+            final TileEntity tileEntity = world.getBlockEntity(pos);
+            if (tileEntity instanceof TileEntityAdvancedTable tileEntityAET) {
+                NetworkHooks.openGui((ServerPlayerEntity) player, tileEntityAET, pos);
+            }
+        }
+        return ActionResultType.SUCCESS;
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public TileEntitySpecialRenderer<?> getTileRenderer () {
-
-        return new TileEntityAdvancedTableRenderer();
+    public BookTexture getBookTexture() {
+        return ModBookTextures.DEFAULT.get();
     }
 }

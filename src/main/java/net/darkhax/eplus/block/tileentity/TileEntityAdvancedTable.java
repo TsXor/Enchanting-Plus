@@ -1,66 +1,97 @@
 package net.darkhax.eplus.block.tileentity;
 
+import net.darkhax.eplus.inventory.ContainerAdvancedTable;
+import net.darkhax.eplus.inventory.ItemStackHandlerEnchant;
+import net.darkhax.eplus.registry.ModTileEntityTypes;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.INameable;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.common.util.Constants.NBT;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import net.darkhax.eplus.inventory.ItemStackHandlerEnchant;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraftforge.common.util.Constants.NBT;
 
-public class TileEntityAdvancedTable extends TileEntityWithBook {
-
+@ParametersAreNonnullByDefault
+public class TileEntityAdvancedTable extends TileEntityWithBook implements INamedContainerProvider, INameable {
+    private ITextComponent customName;
     private final Map<UUID, ItemStackHandlerEnchant> inventories = new HashMap<>();
 
-    public ItemStackHandlerEnchant getInventory (EntityPlayer player) {
+    public TileEntityAdvancedTable() {
+        super(ModTileEntityTypes.ADVANCED_ENCHANTING_TABLE.get());
+    }
 
-        final ItemStackHandlerEnchant inventory = this.inventories.getOrDefault(player.getPersistentID(), new ItemStackHandlerEnchant(this));
-        this.inventories.put(player.getPersistentID(), inventory);
+    public ItemStackHandlerEnchant getInventory(PlayerEntity player) {
+        final ItemStackHandlerEnchant inventory = this.inventories
+                .getOrDefault(player.getUUID(), new ItemStackHandlerEnchant(this));
+        this.inventories.put(player.getUUID(), inventory);
         return inventory;
     }
 
-    public Map<UUID, ItemStackHandlerEnchant> getInveotries () {
-
+    public Map<UUID, ItemStackHandlerEnchant> getInventories() {
         return this.inventories;
     }
 
     @Override
-    public void writeNBT (NBTTagCompound dataTag) {
-
-        final NBTTagList list = new NBTTagList();
-
+    public void serialize(CompoundNBT dataTag) {
+        final ListNBT list = new ListNBT();
         for (final Entry<UUID, ItemStackHandlerEnchant> inventory : this.inventories.entrySet()) {
-
-            final NBTTagCompound invTag = new NBTTagCompound();
-            invTag.setUniqueId("Owner", inventory.getKey());
-            invTag.setTag("Inventory", inventory.getValue().serializeNBT());
-            list.appendTag(invTag);
+            final CompoundNBT invTag = new CompoundNBT();
+            invTag.putUUID("Owner", inventory.getKey());
+            invTag.put("Inventory", inventory.getValue().serializeNBT());
+            list.add(invTag);
         }
-
-        dataTag.setTag("InvList", list);
+        dataTag.put("InvList", list);
+        if (customName != null) {
+            dataTag.putString("CustomName", ITextComponent.Serializer.toJson(customName));
+        }
     }
 
     @Override
-    public void readNBT (NBTTagCompound dataTag) {
-
+    public void deserialize(CompoundNBT dataTag) {
         this.inventories.clear();
-
-        final NBTTagList list = dataTag.getTagList("InvList", NBT.TAG_COMPOUND);
-
-        for (int i = 0; i < list.tagCount(); i++) {
-
-            final NBTTagCompound tag = list.getCompoundTagAt(i);
-
-            if (tag != null) {
-
-                final UUID owner = tag.getUniqueId("Owner");
-                final ItemStackHandlerEnchant inv = new ItemStackHandlerEnchant(this);
-                inv.deserializeNBT(tag.getCompoundTag("Inventory"));
-                this.inventories.put(owner, inv);
-            }
+        final ListNBT list = dataTag.getList("InvList", NBT.TAG_COMPOUND);
+        for (int i = 0; i < list.size(); i++) {
+            final CompoundNBT tag = list.getCompound(i);
+            final UUID owner = tag.getUUID("Owner");
+            final ItemStackHandlerEnchant inv = new ItemStackHandlerEnchant(this);
+            inv.deserializeNBT(tag.getCompound("Inventory"));
+            this.inventories.put(owner, inv);
         }
+        if (dataTag.contains("CustomName", 8)) {
+            customName = ITextComponent.Serializer.fromJson(dataTag.getString("CustomName"));
+        }
+    }
+
+    @Override @Nonnull
+    public ITextComponent getName() {
+        return customName != null ? customName
+                : ITextComponent.nullToEmpty(I18n.get("block.eplus.advanced_table"));
+    }
+
+    @Override @Nonnull
+    public ITextComponent getDisplayName() {
+        return getName();
+    }
+
+    @Override @Nullable
+    public ITextComponent getCustomName() {
+        return customName;
+    }
+
+    @Override @Nullable
+    public Container createMenu(int id, PlayerInventory player, PlayerEntity entity) {
+        return new ContainerAdvancedTable(id, player, this);
     }
 }

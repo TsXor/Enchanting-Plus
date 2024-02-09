@@ -1,186 +1,137 @@
 package net.darkhax.eplus.block;
 
-import net.darkhax.bookshelf.block.ITileEntityBlock;
-import net.darkhax.eplus.ConfigurationHandler;
 import net.darkhax.eplus.block.tileentity.TileEntityDecoration;
 import net.darkhax.eplus.block.tileentity.TileEntityWithBook;
-import net.darkhax.eplus.block.tileentity.renderer.TileEntityDecorationRenderer;
-import net.minecraft.block.BlockContainer;
+import net.darkhax.eplus.setup.ConfigurationHandler;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.ContainerBlock;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.item.Items;
+import net.minecraft.loot.LootContext;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockBookDecoration extends BlockContainer implements ITileEntityBlock {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
-    private static final AxisAlignedBB BOUNDS = new AxisAlignedBB(0.3d, 0.6d, 0.3d, 0.6d, 0.9d, 0.6d);
 
-    public static final String[] TYPES = new String[] { "eplus", "vanilla", "prismarine", "nether", "tartarite", "white", "metal" };
+@SuppressWarnings("deprecation")
+@ParametersAreNonnullByDefault
+public abstract class BlockBookDecoration extends ContainerBlock implements IBookTexture {
+    private static final VoxelShape BOUNDS = box(4.8d, 7.2d, 4.8d, 11.2d, 8.8d, 11.2d);
 
-    public BlockBookDecoration () {
-
-        super(Material.WOOD);
-        this.setHardness(1.5F);
-        this.setLightLevel(0.9375F);
+    public BlockBookDecoration() {
+        super(
+            Properties.of(Material.WOOD)
+                .strength(1.5F)
+                .lightLevel(state -> 10)
+                .noOcclusion()
+        );
     }
 
     @Override
-    public TileEntity createNewTileEntity (World world, int meta) {
+    public boolean hasTileEntity(BlockState state) {
+        return true;
+    }
 
+    @Override @Nullable
+    public TileEntity newBlockEntity(IBlockReader world) {
         return new TileEntityDecoration();
     }
 
-    @Override
-    public AxisAlignedBB getBoundingBox (IBlockState state, IBlockAccess source, BlockPos pos) {
+    @Override @Nonnull
+    public BlockRenderType getRenderShape(BlockState pState) {
+        return BlockRenderType.MODEL;
+    }
 
-        if (source.getTileEntity(pos) instanceof TileEntityDecoration) {
-            return BOUNDS.offset(0, ((TileEntityDecoration) source.getTileEntity(pos)).height, 0);
+    @Override @Nonnull
+    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+        return VoxelShapes.block();
+    }
+
+    @Override @Nonnull
+    public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+        if (world.getBlockEntity(pos) instanceof TileEntityDecoration tileEntityDecoration) {
+            return BOUNDS.move(0, (double) tileEntityDecoration.height / 100d, 0);
         }
-
         return BOUNDS;
     }
 
-    @Override
-    public float getEnchantPowerBonus (World world, BlockPos pos) {
-
-        return ConfigurationHandler.floatingBookBonus;
+    @Override @Nonnull
+    public VoxelShape getVisualShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+        return this.getCollisionShape(state, world, pos, context);
     }
 
     @Override
-    public boolean isFullCube (IBlockState state) {
-
-        return false;
+    public float getEnchantPowerBonus(BlockState state, IWorldReader world, BlockPos pos) {
+        return ConfigurationHandler.FLOATING_BOOK_BONUS.get().floatValue();
     }
 
-    @Override
-    public boolean isOpaqueCube (IBlockState state) {
-
-        return false;
-    }
-
-    @Override
-    public boolean onBlockActivated (World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-
-        if (!worldIn.isRemote && !playerIn.getHeldItemMainhand().isEmpty() && worldIn.getTileEntity(pos) instanceof TileEntityDecoration) {
-
-            final TileEntityDecoration deco = (TileEntityDecoration) worldIn.getTileEntity(pos);
-
-            if (playerIn.getHeldItem(hand).getItem() == Items.FEATHER) {
-                deco.increaseHeight();
+    @Override @Nonnull
+    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        // TODO: implement a simple UI for controlling height and color
+        ItemStack heldStack = player.getItemInHand(hand);
+        if (!heldStack.isEmpty()) {
+            if (world.getBlockEntity(pos) instanceof TileEntityDecoration deco) {
+                Item heldItem = heldStack.getItem();
+                boolean heightChanged = false;
+                /*--*/ if (heldItem == Items.FEATHER) {
+                    deco.increaseHeight();
+                    heightChanged = true;
+                } else if (heldItem == Items.IRON_INGOT) {
+                    deco.decreaseHeight();
+                    heightChanged = true;
+                }
+                if (heightChanged && !world.isClientSide) {
+                    world.setBlockAndUpdate(pos, state);
+                }
             }
-            else if (playerIn.getHeldItem(hand).getItem() == Items.IRON_INGOT) {
-                deco.decreaseHeight();
-            }
-
-            worldIn.notifyBlockUpdate(pos, state, state, 8);
         }
+        return ActionResultType.SUCCESS;
+    }
 
+    @Override @Nonnull
+    public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
+        List<ItemStack> drops = super.getDrops(state, builder);
+        // attach height and color to dropped stack
+        // this is now disabled, maybe one day someone will enable it ;)
+//        TileEntity tileEntity = builder.getOptionalParameter(LootParameters.BLOCK_ENTITY);
+//        if (tileEntity instanceof TileEntityDecoration decoEntity) {
+//            final CompoundNBT tag = new CompoundNBT();
+//            tag.putInt("Height", decoEntity.height);
+//            tag.putInt("Color", decoEntity.color);
+//            drops.forEach(stack -> {
+//                if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof BlockBookDecoration) {
+//                    stack.addTagElement("BlockEntityTag", tag);
+//                }
+//            });
+//        }
+        return drops;
+    }
+
+    @Override
+    public boolean hasAnalogOutputSignal(BlockState state) {
         return true;
     }
 
     @Override
-    public void onBlockPlacedBy (World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-
-        final TileEntity tile = worldIn.getTileEntity(pos);
-
-        if (tile instanceof TileEntityDecoration) {
-            ((TileEntityDecoration) tile).variant = stack.getMetadata();
-        }
-    }
-
-    @Override
-    public ItemStack getItem (World worldIn, BlockPos pos, IBlockState state) {
-
-        final ItemStack itemstack = this.getData((TileEntityDecoration) worldIn.getTileEntity(pos));
-        return itemstack != null ? itemstack : new ItemStack(this);
-    }
-
-    @Override
-    public void harvestBlock (World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te, ItemStack stack) {
-
-        if (te instanceof TileEntityDecoration) {
-            final TileEntityDecoration deco = (TileEntityDecoration) te;
-            spawnAsEntity(worldIn, pos, this.getData(deco));
-        }
-        else {
-            super.harvestBlock(worldIn, player, pos, state, (TileEntity) null, stack);
-        }
-    }
-
-    @Override
-    public java.util.List<ItemStack> getDrops (IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-
-        final TileEntity te = world.getTileEntity(pos);
-
-        final java.util.List<ItemStack> ret = new java.util.ArrayList<>();
-        if (te instanceof TileEntityDecoration) {
-            final TileEntityDecoration deco = (TileEntityDecoration) te;
-            ret.add(this.getData(deco));
-        }
-        else {
-            ret.add(new ItemStack(this, 1, 0));
-        }
-        return ret;
-    }
-
-    public ItemStack getData (TileEntityDecoration tile) {
-
-        final ItemStack stack = new ItemStack(this, 1, tile.variant);
-        final NBTTagCompound tag = new NBTTagCompound();
-        tag.setFloat("Height", tile.height);
-        tag.setInteger("Color", tile.color);
-        stack.setTagCompound(tag);
-        return stack;
-    }
-
-    @Override
-    public void getSubBlocks (CreativeTabs tab, NonNullList<ItemStack> items) {
-
-        for (int meta = 0; meta < TYPES.length; meta++) {
-
-            items.add(new ItemStack(this, 1, meta));
-        }
-    }
-
-    @Override
-    public Class<? extends TileEntity> getTileEntityClass () {
-
-        return TileEntityDecoration.class;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public TileEntitySpecialRenderer<?> getTileRenderer () {
-
-        return new TileEntityDecorationRenderer();
-    }
-
-    @Override
-    public boolean hasComparatorInputOverride (IBlockState state) {
-
-        return true;
-    }
-
-    @Override
-    public int getComparatorInputOverride (IBlockState blockState, World worldIn, BlockPos pos) {
-
-        final TileEntity tile = worldIn.getTileEntity(pos);
-
-        return tile instanceof TileEntityWithBook && ((TileEntityWithBook) tile).isOpen() ? 15 : 0;
+    public int getAnalogOutputSignal(BlockState blockState, World worldIn, BlockPos pos) {
+        final TileEntity tile = worldIn.getBlockEntity(pos);
+        return tile instanceof TileEntityWithBook deco && deco.isOpen() ? 15 : 0;
     }
 }

@@ -1,55 +1,47 @@
 package net.darkhax.eplus.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 
-public class GuiButtonScroller extends GuiButton {
+import javax.annotation.ParametersAreNonnullByDefault;
 
-    public int sliderY = 1;
-    protected static final ResourceLocation TEXTURE = new ResourceLocation("eplus", "textures/gui/enchant.png");
-    public GuiAdvancedTable parent;
 
-    public GuiButtonScroller (GuiAdvancedTable parent, int buttonId, int x, int y) {
-
-        super(buttonId, x, y, "");
-        this.parent = parent;
-
+// this is only button with no background
+@SuppressWarnings("deprecation")
+@ParametersAreNonnullByDefault
+public class GuiButtonScroller extends AbstractVerticalButtonScroller {
+    public GuiButtonScroller(int x, int y, int barHeight, IValueChangeHandler onValueChange, IScrollHandler onScrolled) {
+        super(x, y, 12, 15, barHeight, 0, onValueChange, onScrolled);
     }
 
-    public GuiButtonScroller (GuiAdvancedTable parent, int buttonId, int x, int y, int widthIn, int heightIn) {
-
-        super(buttonId, x, y, widthIn, heightIn, "");
-        this.parent = parent;
+    // render button at specified position
+    private void blitButton(MatrixStack matrixStack, int x, int y, boolean isPressed) {
+        this.blit(matrixStack, x, y, isPressed ? this.width : 0, 182, this.width, this.buttonHeight);
     }
 
     @Override
-    public void drawButton (Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        Minecraft mc = Minecraft.getInstance();
+        mc.getTextureManager().bind(GuiAdvancedTablePure.TEXTURE);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.enableDepthTest();
 
-        if (this.visible) {
-
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
-            mc.getTextureManager().bindTexture(TEXTURE);
-            this.drawTexturedModalRect(this.x, this.y + this.sliderY, this.parent.isSliding || this.parent.enchantmentListAll.size() <= 4 ? this.getButtonWidth() : 0, 182, this.getButtonWidth(), this.height);
-            this.mouseDragged(mc, mouseX, mouseY);
-        }
+        int yOffset = (int) (this.value * (this.barHeight - this.buttonHeight));
+        this.blitButton(matrixStack, this.x, this.y + yOffset, this.isHovered);
     }
 
-    @Override
-    protected void mouseDragged (Minecraft mc, int mouseX, int mouseY) {
-
-        super.mouseDragged(mc, mouseX, mouseY);
-        if (this.parent.isSliding) {
-            this.sliderY = mouseY - this.y - 7;
-            this.sliderY = Math.max(1, this.sliderY);
-            this.sliderY = Math.min(56, this.sliderY);
-            this.parent.updateLabels();
-            final int div = this.height / Math.max(this.parent.enchantmentListAll.size(), 1) + 4;
-            this.parent.listOffset = this.sliderY / div;
-            this.parent.listOffset = Math.max(this.parent.listOffset, 0);
-            this.parent.listOffset = Math.min(this.parent.listOffset, this.parent.enchantmentListAll.size() - 4);
-        }
+    /**
+     * set scroll value according to mouse position, callback will be triggered if value changed
+     * @param mouseX x coordinate
+     * @param mouseY y coordinate
+     */
+    public void setValueFromMouse(double mouseX, double mouseY) {
+        int yStart = this.y + this.buttonHeight / 2;
+        double scrollableLength = this.barHeight - this.buttonHeight;
+        double yOffset = mouseY - yStart;
+        this.setValue(yOffset / scrollableLength);
     }
 }

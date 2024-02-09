@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " g ",
+    "gbg",
+    " g "
+  ],
+  "key": {
+    "g": {
+      "tag": "forge:dusts/glowstone"
+    },
+    "b": {
+      "item": "minecraft:enchanted_book"
+    }
+  },
+  "result": {
+    "item": "eplus:decorative_book_default"
+  }
+}

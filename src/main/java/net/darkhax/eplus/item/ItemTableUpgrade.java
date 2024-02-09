@@ -2,40 +2,47 @@ package net.darkhax.eplus.item;
 
 import net.darkhax.eplus.EnchantingPlus;
 import net.darkhax.eplus.block.tileentity.TileEntityAdvancedTable;
+import net.darkhax.eplus.registry.ModBlocks;
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+
+/**
+ * An item that can be used on an advanced enchanting table.
+ * <br/>Currently, it has no effect... maybe.
+ * <br/>TODO: give this some effects
+ */
+@ParametersAreNonnullByDefault
 public class ItemTableUpgrade extends Item {
-
     public ItemTableUpgrade () {
-
-        this.setMaxStackSize(16);
+        super(new Item.Properties().stacksTo(16).tab(EnchantingPlus.ITEM_GROUP));
     }
 
-    @Override
-    public EnumActionResult onItemUse (EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    @Override @Nonnull
+    public ActionResultType useOn(ItemUseContext context) {
+        final World world = context.getLevel();
+        final BlockPos pos = context.getClickedPos();
+        final Block block = world.getBlockState(pos).getBlock();
 
-        final Block block = worldIn.getBlockState(pos).getBlock();
+        if (block != ModBlocks.ADVANCED_ENCHANTING_TABLE.get()) return ActionResultType.PASS;
 
-        if (block == Blocks.ENCHANTING_TABLE) {
-
-            worldIn.setBlockState(pos, EnchantingPlus.blockAdvancedTable.getDefaultState());
-            worldIn.setTileEntity(pos, new TileEntityAdvancedTable());
-
-            if (!playerIn.capabilities.isCreativeMode) {
-                playerIn.getHeldItem(hand).shrink(1);
-            }
-
-            return EnumActionResult.SUCCESS;
+        final PlayerEntity player = context.getPlayer();
+        final Hand hand = context.getHand();
+        world.setBlock(pos, ModBlocks.ADVANCED_ENCHANTING_TABLE.get().defaultBlockState(), 1);
+        world.setBlockEntity(pos, new TileEntityAdvancedTable());
+        if (player != null && !player.isCreative()) {
+            player.getItemInHand(hand).shrink(1);
         }
 
-        return EnumActionResult.PASS;
+        return ActionResultType.SUCCESS;
     }
 }

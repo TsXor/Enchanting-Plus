@@ -1,72 +1,47 @@
 package net.darkhax.eplus.compat.crt;
 
-import crafttweaker.CraftTweakerAPI;
-import crafttweaker.IAction;
-import crafttweaker.annotations.ZenRegister;
-import crafttweaker.api.enchantments.IEnchantment;
-import crafttweaker.api.item.IItemStack;
+import com.blamejared.crafttweaker.api.CraftTweakerAPI;
+import com.blamejared.crafttweaker.api.actions.IAction;
+import com.blamejared.crafttweaker.api.annotations.ZenRegister;
 import net.darkhax.eplus.api.Blacklist;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
+import org.openzen.zencode.java.ZenCodeType;
 
+
+// TODO: test this and implement a more detailed API
 @ZenRegister
-@ZenClass("mods.eplus.Eplus")
+@ZenCodeType.Name("mods.eplus.Eplus")
+@SuppressWarnings("unused")
 public class EnchantingPlusCRT {
-
-    @ZenMethod
-    public static void blacklistItem (IItemStack stack) {
-
-        CraftTweakerAPI.apply(new ActionBlacklistItem(stack));
+    @ZenCodeType.Method
+    public static void blacklistItem(Item item) {
+        CraftTweakerAPI.apply(new IAction() {
+            @Override
+            public void apply() {
+                Blacklist.blacklistItem(item);
+            }
+            @Override
+            public String describe() {
+                String name = new ItemStack(item).getDisplayName().getString();
+                return String.format("Blacklisting %s from E+", name);
+            }
+        });
     }
 
-    @ZenMethod
-    public static void blacklistEnchantment (IEnchantment enchantment) {
-
-        CraftTweakerAPI.apply(new ActionBlacklist(enchantment));
-    }
-
-    private static class ActionBlacklistItem implements IAction {
-
-        private final IItemStack item;
-
-        public ActionBlacklistItem (IItemStack stack) {
-
-            this.item = stack;
-        }
-
-        @Override
-        public void apply () {
-
-            Blacklist.blacklist((ItemStack) this.item.getDefinition().getInternal());
-        }
-
-        @Override
-        public String describe () {
-
-            return "Blacklisting " + this.item.getDisplayName() + " from E+";
-        }
-    }
-
-    private static class ActionBlacklist implements IAction {
-
-        private final IEnchantment enchantment;
-
-        public ActionBlacklist (IEnchantment enchantment) {
-
-            this.enchantment = enchantment;
-        }
-
-        @Override
-        public void apply () {
-
-            Blacklist.blacklist((ItemStack) this.enchantment.getDefinition().getInternal());
-        }
-
-        @Override
-        public String describe () {
-
-            return "Blacklisting " + this.enchantment.displayName() + " from E+";
-        }
+    @ZenCodeType.Method
+    public static void blacklistEnchantment(Enchantment enchantment) {
+        CraftTweakerAPI.apply(new IAction() {
+            @Override
+            public void apply() {
+                Blacklist.blacklistEnchantment(enchantment);
+            }
+            @Override
+            public String describe() {
+                String name = enchantment.getFullname(1).getString();
+                return String.format("Blacklisting %s from E+", name);
+            }
+        });
     }
 }

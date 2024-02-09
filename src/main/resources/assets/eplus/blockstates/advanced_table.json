@@ -1,5 +1,5 @@
 {
     "variants": {
-        "normal": { "model": "eplus:advanced_table" }
+        "": { "model": "eplus:block/advanced_table" }
     }
 }

@@ -1,46 +1,41 @@
 package net.darkhax.eplus.block.tileentity;
 
-import java.awt.Color;
+import net.darkhax.eplus.registry.ModTileEntityTypes;
+import net.minecraft.nbt.CompoundNBT;
 
-import net.minecraft.nbt.NBTTagCompound;
+import java.awt.*;
 
 public class TileEntityDecoration extends TileEntityWithBook {
-
-    public float height = 0f;
+    public int height = 0;
     public int color = Color.WHITE.getRGB();
-    public int variant;
+
+    public TileEntityDecoration() {
+        super(ModTileEntityTypes.DECORATIVE_BOOK.get());
+    }
 
     public void decreaseHeight () {
-
-        this.height -= 0.05f;
-
-        if (this.height < -0.35f) {
-            this.height = -0.35f;
+        this.height -= 5;
+        if (this.height < -35) {
+            this.height = -35;
         }
     }
 
     public void increaseHeight () {
-
-        this.height += 0.05f;
-
-        if (this.height > 0.35f) {
-            this.height = 0.35f;
+        this.height += 5;
+        if (this.height > 35) {
+            this.height = 35;
         }
     }
 
     @Override
-    public void readNBT (NBTTagCompound dataTag) {
-
-        this.height = dataTag.getFloat("Height");
-        this.color = dataTag.getInteger("Color");
-        this.variant = dataTag.getInteger("Variant");
+    public void deserialize(CompoundNBT dataTag) {
+        this.height = dataTag.getInt("Height");
+        this.color = dataTag.getInt("Color");
     }
 
     @Override
-    public void writeNBT (NBTTagCompound dataTag) {
-
-        dataTag.setFloat("Height", this.height);
-        dataTag.setInteger("Color", this.color);
-        dataTag.setInteger("Variant", this.variant);
+    public void serialize(CompoundNBT dataTag) {
+        dataTag.putInt("Height", this.height);
+        dataTag.putInt("Color", this.color);
     }
 }

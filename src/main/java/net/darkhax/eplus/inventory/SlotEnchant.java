@@ -1,36 +1,39 @@
 package net.darkhax.eplus.inventory;
 
-import net.darkhax.eplus.EnchantingPlus;
-import net.darkhax.eplus.block.tileentity.EnchantmentLogicController;
+import net.darkhax.eplus.api.Blacklist;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+
+@ParametersAreNonnullByDefault
 public class SlotEnchant extends SlotItemHandler {
+    protected final IItemChangeHandler onItemChange;
 
-    private final EnchantmentLogicController logic;
-
-    public SlotEnchant (EnchantmentLogicController logic, int index, int xPosition, int yPosition) {
-
-        super(logic.getInventory(), index, xPosition, yPosition);
-        this.logic = logic;
+    public SlotEnchant(ItemStackHandler inventory, int index, int xPosition, int yPosition, IItemChangeHandler onItemChange) {
+        super(inventory, index, xPosition, yPosition);
+        this.onItemChange = onItemChange;
     }
 
     @Override
-    public void onSlotChanged () {
-
-        this.logic.onItemUpdated();
-        super.onSlotChanged();
+    public void setChanged() {
+        this.onItemChange.onItemChange(this);
+        super.setChanged();
     }
 
     @Override
-    public int getSlotStackLimit () {
-
+    public int getMaxStackSize() {
         return 1;
     }
 
     @Override
-    public boolean isItemValid (ItemStack stack) {
+    public boolean mayPlace(ItemStack stack) {
+        return Blacklist.canItemStackEnchant(stack);
+    }
 
-        return EnchantingPlus.TEST_ENCHANTABILITY.test(stack);
+    public interface IItemChangeHandler {
+        void onItemChange(SlotEnchant slot);
     }
 }

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "eplus:advanced_table"
+    ]
+  },
+  "criteria": {
+    "have_et": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:enchanting_table"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "eplus:advanced_table"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "have_et",
+      "has_the_recipe"
+    ]
+  ]
+}
