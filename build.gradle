@@ -93,7 +93,9 @@ dependencies {
 }
 
 processResources {
-    from('src/main/resources/META-INF/mods.toml') {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    from(sourceSets.main.resources) {
+        include('META-INF/mods.toml')
         filter(ReplaceTokens,
             tokens: [ 'eplus_version' : version.toString(), ]
         )
