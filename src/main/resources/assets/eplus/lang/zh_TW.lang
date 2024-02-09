@@ -89,6 +89,6 @@ enchantment.extrautils2.xu.boomereaperang=迴旋鏢將會收割作物。
 enchantment.randomthings.magnetic.desc=擁有磁性附魔的工具，挖掘出的掉落物將直接進入你的物品欄，而不是落在地上。
 
 #JEI
-jei.eplus.advancedtable=這張附魔臺可以用來對物品施加你想要的特定附魔。
+jei.eplus.advanced_table=這張附魔臺可以用來對物品施加你想要的特定附魔。
 jei.eplus.upgrade=將現有的附魔臺升級為高級附魔臺，需要潛行右擊方塊。
 jei.eplus.decorative=這些書主要是裝飾性的，它們算作書架來強化附魔臺。在適當的情況下，它們也可以與比較器進行交互。

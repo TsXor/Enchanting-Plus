@@ -11,6 +11,7 @@ Thumbs.db
 /eclipse
 /.gradle
 /.idea
+/.vscode
 /run
 /out
 *~

@@ -1,0 +1,50 @@
+{
+    "_comment": "Enchanting Plus Turkish Language File",
+    
+    "_comment": "Blocks",
+    "block.eplus.advanced_table": "Gelişmiş Büyü Masası",
+    "block.eplus.decorative_book_default": "Enchanting Plus Kitabı",
+    "block.eplus.decorative_book_vanilla": "Büyü Kitabı",
+    "block.eplus.decorative_book_prismarine": "Prizmarin Kitabı",
+    "block.eplus.decorative_book_nether": "Nether Kitabı",
+    "block.eplus.decorative_book_tartarite": "Tartarite Kitabı",
+    "block.eplus.decorative_book_white": "Soluk Kitap",
+    "block.eplus.decorative_book_metal": "Metal Kitap",
+    
+    "_comment": "Items",
+    "item.eplus.table_upgrade": "Masa Yükseltmesi",
+    
+    "_comment": "Misc",
+    "itemGroup.eplus": "Enchanting Plus",
+    
+    "_comment": "Info Box",
+    "eplus.info.playerxp": "EXP: %d",
+    "eplus.info.costxp": "Ücret: %d",
+    "eplus.info.infinity": "EXP: ∞",
+    "eplus.info.power": "İndirim: %.2f",
+    "gui.eplus.info.noitem": "Mevcut büyüleri görmek için bir eşyayı koy.",
+    "gui.eplus.info.noench": "Bu eşya için mevcut bir büyü yok.",
+    "gui.eplus.info.tooexpensive": "Bu büyüyü yapman için daha fazla tecrübe puanına ihtiyacın var.",
+    
+    "eplus.info.tip.prefix": "İpucu:",
+    "eplus.info.tip.bonus": "Bonus İpucu:",
+    "eplus.info.tip.description": "Büyü kaydırıcısında %s tuşuna basılı tutarak açıklamayı gör.",
+    "eplus.info.tip.books": "Büyülerin ücretlerini düşürmek için masanın etrafına kitaplık koyabilirsin.",
+    "eplus.info.tip.treasure": "Hazine büyülerinin bir kat dolusu değerli malzemelere ve gün ışığına ihtiyacı var.",
+    "eplus.info.tip.curse": "Lanetler sadece gece yarısına doğru veya dolunay olduğunda değiştirilebilir.",
+    "eplus.info.tip.storage": "Gelişmiş masa envanterini bir sandık gibi depolar.",
+    "eplus.info.tip.inventory": "Masada her oyuncunun kendine özgü envanteri vardır. Masa kırıldığında tüm envanterlerin içeriklerinin düşmesi gerçekleşir.",
+    "eplus.info.tip.armor": "Yandaki zırh slotları aynı oyuncu envanterindeki gibidir.",
+    "eplus.info.tip.birthday": "Bu senin doğum günün olabilir.",
+    
+    "_comment": "Tooltips",
+    "gui.eplus.tooltip.tooexpensive": "Büyülerin çok pahalı!",
+    "gui.eplus.tooltip.enchant": "Tıklayarak büyüyü bas.",
+    "gui.eplus.tooltip.nochange": "Hiçbir değişim yapılmadı.",
+    "tooltip.eplus.missing": "Açıklama bulunamadı. %s yapımcısından eklemesini isteyebilirsin, veya kendin ekleyebilirsin. Lokalizasyon tuşu %s",
+    
+    "_comment": "JEI",
+    "jei.eplus.advanced_table": "Bu masa istediğin büyülerle eşyaya büyü basmanı sağlar.",
+    "jei.eplus.upgrade": "Elinde olan masayı gelişmiş masaya yükseltir. Bloğa sağ tık + shift yapman gerekli.",
+    "jei.eplus.decorative": "Bu kitaplar genel olarak süs amaçlıdır. Büyü masaları için kitaplık olarak sayılırlar. Ayrıca doğru şartlarda karşılaştırıcılarla etkileşim içinde bulunurlar."
+}

@@ -100,4 +100,6 @@ processResources {
     }
 }
 
-jar {}
+jar {
+    finalizedBy('reobfJar')
+}

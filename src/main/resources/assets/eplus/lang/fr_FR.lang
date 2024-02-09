@@ -89,6 +89,6 @@ enchantment.extrautils2.xu.boomereaperang=Le boomerang récoltera les plantes.
 enchantment.randomthings.magnetic.desc=Attire les objets minés vers vous.
 
 #JEI
-jei.eplus.advancedtable=Cette table peut être utilisée pour enchanter des objets avec les enchantements que vous souhaitez.
+jei.eplus.advanced_table=Cette table peut être utilisée pour enchanter des objets avec les enchantements que vous souhaitez.
 jei.eplus.upgrade=Améliore une table d'enchantement classique en une améliorée. Maintenir shift et faire un clic-droit sur la table pour l'améliorer.
 jei.eplus.decorative=Ces livres sont surtout décoratifs. Ils sont comptés comme des bibliothèques pour les tables d'enchantement. Ils peuvent aussi interagir avec des comparateurs dans les bonnes conditions.
