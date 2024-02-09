@@ -1,6 +1,11 @@
 # [Enchanting Plus](https://www.curseforge.com/minecraft/mc-mods/enchanting-plus)
 
-Enchanting Plus is a mod that gives players a greater degree of control over enchanting their items. This source repository contains the code for MC 1.5.2 to 1.12.2 and is no longer being updated. While the project has taken a long hiatus there are still active plans to bring this mod into modern versions of the game. Future updates and announcements will be posted to the project on CurseForge.
+Enchanting Plus is a mod that gives players a greater degree of control over enchanting their items.
+
+Currently, this source repository contains the code for MC 1.16.5.
+
+## Warning on CraftTweaker API
+CraftTweaker API is not tested yet and is a target to change.
 
 ## Credits
 
