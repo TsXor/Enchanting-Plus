@@ -18,6 +18,8 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
+import java.util.Objects;
+
 
 @SuppressWarnings("deprecation")
 @Mod.EventBusSubscriber(modid = EnchantingPlus.ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -28,7 +30,7 @@ public class ClientEventHandler {
         if (stitching.equals(AtlasTexture.LOCATION_BLOCKS)) {
             // register books
             ModBookTextures.BOOK_TEXTURES.getEntries().stream().map(RegistryObject::get).forEach(
-                    bookTexture -> event.addSprite(bookTexture.material.texture())
+                    bookTexture -> event.addSprite(Objects.requireNonNull(bookTexture.material).texture())
             );
         }
     }

@@ -35,12 +35,6 @@ import java.util.*;
 @SuppressWarnings("deprecation")
 @ParametersAreNonnullByDefault
 public abstract class GuiAdvancedTablePure extends ContainerScreen<ContainerAdvancedTable> {
-    public static class EnchantmentList extends ArrayList<EnchantmentData> {
-        /**
-         * This needs to be set to true whenever this list is modified.
-         */
-        public boolean isDirty = true;
-    }
 
     public record PostponedHoveringText(
             @Nonnull List<? extends ITextProperties> textLines,
@@ -105,7 +99,7 @@ public abstract class GuiAdvancedTablePure extends ContainerScreen<ContainerAdva
 
     protected abstract List<String> getEnchantButtonTip();
 
-    protected abstract EnchantmentList getEnchantmentList();
+    protected abstract ContainerAdvancedTable.EnchantmentList getEnchantmentList();
 
     protected abstract boolean shouldInfoBeLocked(EnchantmentData info);
 
@@ -132,7 +126,7 @@ public abstract class GuiAdvancedTablePure extends ContainerScreen<ContainerAdva
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         // pre-render net.darkhax.eplus.setup
-        EnchantmentList availableEnchantments = getEnchantmentList();
+        ContainerAdvancedTable.EnchantmentList availableEnchantments = getEnchantmentList();
         if (availableEnchantments.isDirty) {
             this.selectedEnchantmentIdx = -1;
             this.scrollbar.visible = availableEnchantments.size() > this.labels.size();
@@ -167,7 +161,7 @@ public abstract class GuiAdvancedTablePure extends ContainerScreen<ContainerAdva
     }
 
     private void updateLabelContents() {
-        EnchantmentList availableEnchantments = getEnchantmentList();
+        ContainerAdvancedTable.EnchantmentList availableEnchantments = getEnchantmentList();
         if (availableEnchantments.size() > this.labels.size()) {
             int startIdx = (int) MathHelper.lerp(this.scrollbar.value,
                     0, availableEnchantments.size() - this.labels.size());
@@ -190,7 +184,7 @@ public abstract class GuiAdvancedTablePure extends ContainerScreen<ContainerAdva
     }
 
     private void updateLabelSelectionState() {
-        EnchantmentList availableEnchantments = getEnchantmentList();
+        ContainerAdvancedTable.EnchantmentList availableEnchantments = getEnchantmentList();
         if (availableEnchantments.size() > this.labels.size()) {
             int startIdx = (int) MathHelper.lerp(this.scrollbar.value,
                     0, availableEnchantments.size() - this.labels.size());
@@ -229,7 +223,7 @@ public abstract class GuiAdvancedTablePure extends ContainerScreen<ContainerAdva
     }
 
     public void handleScrollerScroll(AbstractVerticalButtonScroller scroller, double mouseX, double mouseY, double delta) {
-        EnchantmentList availableEnchantments = getEnchantmentList();
+        ContainerAdvancedTable.EnchantmentList availableEnchantments = getEnchantmentList();
         if (availableEnchantments.size() > this.labels.size()) {
             int scrollableCols = availableEnchantments.size() - this.labels.size();
             scroller.incValue(-delta / 2.0D / scrollableCols);
@@ -250,7 +244,7 @@ public abstract class GuiAdvancedTablePure extends ContainerScreen<ContainerAdva
         // instead of pre-building a hashmap
         int clickedLabelIdx = this.labels.indexOf(clickedLabel);
         int clickedEnchantmentIdx;
-        EnchantmentList availableEnchantments = getEnchantmentList();
+        ContainerAdvancedTable.EnchantmentList availableEnchantments = getEnchantmentList();
         if (availableEnchantments.size() > this.labels.size()) {
             int startIdx = (int) MathHelper.lerp(this.scrollbar.value,
                     0, availableEnchantments.size() - this.labels.size());

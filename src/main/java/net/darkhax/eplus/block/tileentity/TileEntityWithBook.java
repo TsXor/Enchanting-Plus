@@ -9,6 +9,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.EnchantingTableTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -34,6 +36,7 @@ public abstract class TileEntityWithBook extends TileEntityBasicTickable {
         super(tileEntityType);
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Nonnull
     public BookTexture getBookTexture() {
         BookTexture DEFAULT = ModBookTextures.DEFAULT.get();

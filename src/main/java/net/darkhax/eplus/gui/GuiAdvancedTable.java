@@ -83,7 +83,7 @@ public class GuiAdvancedTable extends GuiAdvancedTablePure {
     }
 
     @Override
-    protected EnchantmentList getEnchantmentList() {
+    protected ContainerAdvancedTable.EnchantmentList getEnchantmentList() {
         return this.menu.availableEnchantments;
     }
 

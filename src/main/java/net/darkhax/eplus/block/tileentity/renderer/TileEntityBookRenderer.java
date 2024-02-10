@@ -14,6 +14,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3f;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Objects;
 
 public abstract class TileEntityBookRenderer extends TileEntityRenderer<TileEntityWithBook> {
     private final BookModel bookModel = new BookModel();
@@ -49,7 +50,8 @@ public abstract class TileEntityBookRenderer extends TileEntityRenderer<TileEnti
         float bookSpread = MathHelper.lerp(partialTicks, blockEntity.bookSpreadPrev, blockEntity.bookSpread);
         this.bookModel.setupAnim(ticks, MathHelper.clamp(leftPageFlip, 0.0F, 1.0F),
                 MathHelper.clamp(rightPageFlip, 0.0F, 1.0F), bookSpread);
-        IVertexBuilder vertexBuilder = blockEntity.getBookTexture().material.buffer(buffer, RenderType::entitySolid);
+        IVertexBuilder vertexBuilder = Objects.requireNonNull(blockEntity.getBookTexture().material)
+                .buffer(buffer, RenderType::entitySolid);
         this.bookModel.render(matrixStack, vertexBuilder, combinedLight, combinedOverlay,
                 1.0f, 1.0f, 1.0f, 1.0f);
         matrixStack.popPose();

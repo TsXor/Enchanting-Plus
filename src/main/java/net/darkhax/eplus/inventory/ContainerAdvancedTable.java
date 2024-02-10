@@ -3,24 +3,18 @@ package net.darkhax.eplus.inventory;
 import net.darkhax.eplus.EnchLogic;
 import net.darkhax.eplus.api.event.AvailableEnchantmentsEvent;
 import net.darkhax.eplus.block.tileentity.TileEntityAdvancedTable;
-import net.darkhax.eplus.gui.GuiAdvancedTablePure;
 import net.darkhax.eplus.util.EnchantmentUtils;
 import net.darkhax.eplus.util.WorldUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 
 /**
@@ -30,11 +24,18 @@ import java.util.UUID;
  * <br/>TODO: enable adding multiple enchantments a time
  */
 public class ContainerAdvancedTable extends ContainerAdvancedTablePure {
+    public static class EnchantmentList extends ArrayList<EnchantmentData> {
+        /**
+         * This needs to be set to true whenever this list is modified.
+         */
+        public boolean isDirty = true;
+    }
+
     public static final UUID LUCKY_UUID = UUID.fromString("10755ea6-9721-467a-8b5c-92adf689072c");
 
     private float enchantmentPower;
     private int cost;
-    public final GuiAdvancedTablePure.EnchantmentList availableEnchantments = new GuiAdvancedTablePure.EnchantmentList();
+    public final EnchantmentList availableEnchantments = new EnchantmentList();
     @Nullable private EnchantmentData selectedEnchantment = null;
 
     public ContainerAdvancedTable(int windowId, PlayerInventory playerInv, TileEntityAdvancedTable tileEntity) {
@@ -47,14 +48,10 @@ public class ContainerAdvancedTable extends ContainerAdvancedTablePure {
 
 
     public boolean isPlayerCreative() {
-        PlayerEntity playerSP = Minecraft.getInstance().player;
-        if (playerSP != null) return playerSP.isCreative();
         return this.player.isCreative();
     }
 
     public boolean isPlayerLucky() {
-        PlayerEntity playerSP = Minecraft.getInstance().player;
-        if (playerSP != null) return playerSP.getUUID().equals(LUCKY_UUID);
         return this.player.getUUID().equals(LUCKY_UUID);
     }
 
