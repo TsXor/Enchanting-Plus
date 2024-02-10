@@ -52,7 +52,6 @@ public class EnchantmentUtils {
             for (EnchantAreaPos powerPos : poweringPos) {
                 for (int yOff = 0; yOff < ENCHANT_POWER_AREA_HEIGHT; yOff++) {
                     BlockPos bPos = pos.offset(powerPos.xOff, yOff, powerPos.zOff);
-                    if (!world.isEmptyBlock(bPos)) continue;
                     power += EnchantmentUtils.getEnchantPowerProvided(world, bPos);
                 }
             }

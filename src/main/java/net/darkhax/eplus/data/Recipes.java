@@ -60,7 +60,6 @@ public class Recipes extends RecipeProvider {
                 .define('t', Items.ENCHANTING_TABLE)
                 .unlockedBy("have_et", InventoryChangeTrigger.Instance.hasItems(Items.ENCHANTING_TABLE))
                 .save(consumer);
-        // TODO: make it really upgrade
         ShapelessRecipeBuilder.shapeless(ModItems.ADVANCED_ENCHANTING_TABLE.get())
                 .requires(Items.ENCHANTING_TABLE)
                 .requires(ModItems.TABLE_UPGRADE.get())

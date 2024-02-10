@@ -92,6 +92,6 @@
     
     "_comment": "JEI",
     "jei.eplus.advanced_table": "This table can be used to enchant items with specific enchantments that you want.",
-    "jei.eplus.upgrade": "Upgrades an existing enchanting table to an advanced one. Requires a shift right click on the block. (Currently, it have no effect :[)",
+    "jei.eplus.upgrade": "Upgrades an existing enchanting table to an advanced one.",
     "jei.eplus.decorative": "These books are primarily decorative. They count as bookshelves to enchanting tables. They can also interact with comparators under the right circumstances."
 }
