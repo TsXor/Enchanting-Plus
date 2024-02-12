@@ -24,7 +24,7 @@ public final class EnchantingPlus {
     public EnchantingPlus() {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigurationHandler.COMMON_CONFIG);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ConfigurationHandler.SERVER_CONFIG);
 
         modEventBus.addListener(CommonEventHandler::init);
 

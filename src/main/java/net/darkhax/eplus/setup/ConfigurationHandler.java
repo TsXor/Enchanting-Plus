@@ -1,6 +1,7 @@
 package net.darkhax.eplus.setup;
 
 import com.google.common.collect.ImmutableList;
+import net.darkhax.eplus.EnchantingPlus;
 import net.darkhax.eplus.api.Blacklist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -10,9 +11,9 @@ import net.minecraftforge.fml.config.ModConfig;
 import java.util.List;
 
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = EnchantingPlus.ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class ConfigurationHandler {
-    public static ForgeConfigSpec COMMON_CONFIG;
+    public static ForgeConfigSpec SERVER_CONFIG;
 
     public static final String CATEGORY_PARAMETERS = "parameters";
     public static ForgeConfigSpec.DoubleValue COST_FACTOR;
@@ -26,29 +27,29 @@ public final class ConfigurationHandler {
     public static ForgeConfigSpec.ConfigValue<List<? extends String>> BLACKLISTED_ENCHANTMENTS;
 
     static {
-        ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
+        ForgeConfigSpec.Builder SERVER_BUILDER = new ForgeConfigSpec.Builder();
 
-        COMMON_BUILDER.comment("Enchantment calculation parameter settings").push(CATEGORY_PARAMETERS);
-        COST_FACTOR = COMMON_BUILDER.comment("Cost of applying all enchantments is multiplied with this value. Default: 1.5")
+        SERVER_BUILDER.comment("Enchantment calculation parameter settings").push(CATEGORY_PARAMETERS);
+        COST_FACTOR = SERVER_BUILDER.comment("Cost of applying all enchantments is multiplied with this value. Default: 1.5")
                 .defineInRange("costFactor", 1.5, 0, Double.MAX_VALUE);
-        TREASURE_FACTOR = COMMON_BUILDER.comment("Cost of applying non-curse treasure enchantments is multiplied with this value. Default: 4")
+        TREASURE_FACTOR = SERVER_BUILDER.comment("Cost of applying non-curse treasure enchantments is multiplied with this value. Default: 4")
                 .defineInRange("treasureFactor", 4, 0, Double.MAX_VALUE);
-        CURSE_FACTOR = COMMON_BUILDER.comment("Cost of applying curse enchantments is multiplied with this value. Default: 3")
+        CURSE_FACTOR = SERVER_BUILDER.comment("Cost of applying curse enchantments is multiplied with this value. Default: 3")
                 .defineInRange("curseFactor", 3, 0, Double.MAX_VALUE);
-        BASE_COST = COMMON_BUILDER.comment("Base cost of enchantment process. Default: 45")
+        BASE_COST = SERVER_BUILDER.comment("Base cost of enchantment process. Default: 45")
                 .defineInRange("baseCost", 45, 0, Integer.MAX_VALUE);
-        FLOATING_BOOK_BONUS = COMMON_BUILDER.comment("Bonus enchant power every decorating book can provide. Default: 1")
+        FLOATING_BOOK_BONUS = SERVER_BUILDER.comment("Bonus enchant power every decorating book can provide. Default: 1")
                 .defineInRange("floatingBookBonus", 1, 0, Double.MAX_VALUE);
-        COMMON_BUILDER.pop();
+        SERVER_BUILDER.pop();
 
-        COMMON_BUILDER.comment("Blacklist things, loved by server owners ;)").push(CATEGORY_BLACKLISTS);
-        BLACKLISTED_ITEMS = COMMON_BUILDER.comment("List of blacklisted items. Format is modId:itemId, modId can be omitted for vanilla (you may need to understand something about \"flattening\"). Default: empty :]")
+        SERVER_BUILDER.comment("Blacklist things, loved by server owners ;)").push(CATEGORY_BLACKLISTS);
+        BLACKLISTED_ITEMS = SERVER_BUILDER.comment("List of blacklisted items. Format is modId:itemId, modId can be omitted for vanilla (you may need to understand something about \"flattening\"). Default: empty :]")
                 .defineList("blacklistedItems", ImmutableList.of(), obj -> true);
-        BLACKLISTED_ENCHANTMENTS = COMMON_BUILDER.comment("List of blacklisted items. Format is modId:enchantmentId, modId can be omitted for vanilla. Default: empty :]")
+        BLACKLISTED_ENCHANTMENTS = SERVER_BUILDER.comment("List of blacklisted items. Format is modId:enchantmentId, modId can be omitted for vanilla. Default: empty :]")
                 .defineList("blacklistedEnchantments", ImmutableList.of(), obj -> true);
-        COMMON_BUILDER.pop();
+        SERVER_BUILDER.pop();
 
-        COMMON_CONFIG = COMMON_BUILDER.build();
+        SERVER_CONFIG = SERVER_BUILDER.build();
     }
 
     @SubscribeEvent
